@@ -30,6 +30,28 @@ func main() {
 		}
 		fmt.Println("Please choose either X's or O's")
 	}
+	
+	//Choose wether to go first or second
+	//goFirst asks if you want to go first so yes is first no is second
+	//check validity of answer then set the true value of going first
+	var first bool
+	var firstS string
+	for (
+		firstS = goFirst()
+		if firstS == "yes" || firstS == "Yes" || firstS == "y" || firstS == "Y" || firstS == "no" || firstS == "No" || firstS == "n" || firstS == "N" {
+			if firstS == "yes" || firstS == "Yes" || firstS == "y" || firstS == "Y" {
+				first = true
+				break
+			}
+			else{
+				first = false
+				break
+			}
+		}
+	)
+	
+	//
+
 }
 
 //function to ask user to choose a team
@@ -65,3 +87,5 @@ func goFirst() string {
 	playerFirst = strings.TrimRight(playerFirst, "\r\n")
 	return playerFirst
 }
+
+
