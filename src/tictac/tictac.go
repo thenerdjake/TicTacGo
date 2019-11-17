@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	var board [9]string
 	var a, b, c, d, e, f, g, h, i = " ", " ", " ", " ", " ", " ", " ", " ", " "
 	var s = " | "
 	var line = "-----------"
@@ -30,26 +31,27 @@ func main() {
 		}
 		fmt.Println("Please choose either X's or O's")
 	}
-	
+
 	//Choose wether to go first or second
 	//goFirst asks if you want to go first so yes is first no is second
 	//check validity of answer then set the true value of going first
 	var first bool
 	var firstS string
-	for (
+	for {
 		firstS = goFirst()
 		if firstS == "yes" || firstS == "Yes" || firstS == "y" || firstS == "Y" || firstS == "no" || firstS == "No" || firstS == "n" || firstS == "N" {
 			if firstS == "yes" || firstS == "Yes" || firstS == "y" || firstS == "Y" {
 				first = true
 				break
-			}
-			else{
+			} else {
 				first = false
 				break
 			}
+			if first == true {
+				break
+			}
 		}
-	)
-	
+	}
 	//
 
 }
@@ -88,4 +90,12 @@ func goFirst() string {
 	return playerFirst
 }
 
+func createBoard() {}
 
+func updateBoard() {}
+
+func placeTile() {}
+
+func checkWin() {}
+
+func askInput() {}
