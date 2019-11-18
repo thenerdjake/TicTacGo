@@ -12,7 +12,7 @@ var board = [3][3]string{
 	{" ", " ", " "},
 	{" ", " ", " "}}
 
-	var currentPlayer = " "
+var currentPlayer = " "
 
 func main() {
 
@@ -49,20 +49,20 @@ func main() {
 		}
 	}
 
-	if first == true{
+	if first == true {
 		setPlayer(team)
-	}else {
+	} else {
 		setPlayer(opposite(team))
 	}
 
 	for {
 		playGame()
-		if (playAgain() == false){
+		if playAgain() == false {
 			break
 		}
+		clearBoard()
+		printboard()
 	}
-
-
 
 }
 
@@ -77,20 +77,20 @@ func chooseTeam() string {
 	return team
 }
 
-func capitalize(letter string) string{
-	if letter == "x" || letter == "X"{
+func capitalize(letter string) string {
+	if letter == "x" || letter == "X" {
 		return "X"
-	}else {
+	} else {
 		return "O"
 	}
 }
 
-func opposite(letter string) string{
-		if letter == "X"{
-			return "O"
-		}else {
-			return "X"
-		}
+func opposite(letter string) string {
+	if letter == "X" {
+		return "O"
+	} else {
+		return "X"
+	}
 }
 
 //ask the player how many people are playing
@@ -117,8 +117,8 @@ func goFirst() string {
 }
 
 func clearBoard() {
-	for i := 0; i < 2; i++ {
-		for j := 0; j < 2; j++ {
+	for i := 0; i <= 2; i++ {
+		for j := 0; j <= 2; j++ {
 			board[i][j] = " "
 		}
 	}
@@ -127,7 +127,7 @@ func clearBoard() {
 
 func playGame() {
 	for {
-		if checkWin() == true{
+		if checkWin() == true {
 			break
 		}
 		askInput()
@@ -151,41 +151,101 @@ func printboard() {
 
 func placeTile(location int, tile string) {
 	xlocation := (location - 1) / 3
-	ylocation := (location -1) % 3
+	ylocation := (location - 1) % 3
 	updateBoard(xlocation, ylocation, tile)
 }
 
-func setPlayer(team string){
+func setPlayer(team string) {
 	currentPlayer = capitalize(team)
 }
 
-func changePlayer(){
+func changePlayer() {
 	if currentPlayer == "X" {
 		currentPlayer = "O"
-	} else if currentPlayer== "O" {
+	} else if currentPlayer == "O" {
 		currentPlayer = "X"
 	}
 }
 
+func getWinner() string {
+	var sum int = 0
+	for i := 1; i <= 3; i++ {
+		sum = rowSum(i)
+		if sum > 2 {
+			return "0"
+		} else if sum < -2 {
+			return "X"
+		}
+	}
+	for i := 1; i <= 3; i++ {
+		sum = columnSum(i)
+		if sum > 2 {
+			return "0"
+		} else if sum < -2 {
+			return "X"
+		}
+	}
+	for i := 1; i <= 2; i++ {
+		sum = diagonalSum(i)
+	}
+	if sum > 2 {
+		return "0"
+	} else if sum < -2 {
+		return "X"
+	}
+	return " "
+}
+
+func rowSum(row int) int {
+	return tileNumber(row*3) + tileNumber(row*3-1) + tileNumber(row*3-2)
+}
+
+func columnSum(column int) int {
+	return tileNumber(column) + tileNumber(column+3) + tileNumber(column+6)
+}
+
+func diagonalSum(diagonal int) int {
+	if diagonal > 0 {
+		return tileNumber(7) + tileNumber(5) + tileNumber(3)
+	} else {
+		return tileNumber(1) + tileNumber(5) + tileNumber(9)
+	}
+}
+
+func tileNumber(location int) int {
+	if board[convertX(location)][convertY(location)] == "O" {
+		return 1
+	} else if board[convertX(location)][convertY(location)] == "X" {
+		return -1
+	} else {
+		return 0
+	}
+}
+
 func checkWin() bool {
-	return false
+	if getWinner() != " " {
+		return true
+	} else {
+		return false
+	}
 }
 
 func playAgain() bool {
-	return false
+	fmt.Println("Do you want to play again?")
+	return getYesNo()
 }
 
 func askInput() {
-	for{
+	for {
 		fmt.Println("Current Player: " + currentPlayer)
 		fmt.Println("Where do you want to go? 1-9")
 		var choice int
 		fmt.Scan(&choice)
 		if choice < 0 && choice > 10 {
-				fmt.Println("I said 1-9, try again")
-		}else if checkTile(choice) != " "{
+			fmt.Println("I said 1-9, try again")
+		} else if checkTile(choice) != " " {
 			fmt.Println("That spot is taken try again")
-		}else {
+		} else {
 			placeTile(choice, currentPlayer)
 			break
 		}
@@ -193,14 +253,42 @@ func askInput() {
 
 }
 
-func checkTile(location int) string{
-	xlocation := (location - 1) / 3
-	ylocation := (location -1) % 3
-	return board[xlocation][ylocation]
+func convertX(location int) int {
+	return (location - 1) / 3
+}
+
+func convertY(location int) int {
+	return (location - 1) % 3
+}
+
+func checkTile(location int) string {
+	return board[convertX(location)][convertY(location)]
+}
+
+func getYesNo() bool {
+	reader := bufio.NewReader(os.Stdin)
+	var response string
+	for {
+		response, _ = reader.ReadString('\n')
+		response = strings.TrimRight(response, "\r\n")
+		if response == "yes" || response == "Yes" || response == "y" || response == "Y" || response == "no" || response == "No" || response == "n" || response == "N" {
+			if response == "yes" || response == "Yes" || response == "y" || response == "Y" {
+				return true
+			} else {
+				return false
+			}
+		} else {
+			fmt.Println("Please answer yes or no")
+		}
+	}
 }
 
 func error() {}
 
 func checkPlayAgain() {}
 
-func displayWinner() {}
+func displayWinner() {
+	fmt.Println()
+	fmt.Println("Congrats!" + getWinner() + " won the game")
+	fmt.Println()
+}
