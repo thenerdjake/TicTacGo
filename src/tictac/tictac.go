@@ -46,6 +46,8 @@ func main() {
 			}
 		}
 	}
+
+	changePlayer(team)
 	//
 
 }
@@ -111,6 +113,18 @@ func placeTile(location int, tile string) {
 	updateBoard(xlocation, ylocation, tile)
 }
 
+func changePlayer(team string){
+	if team == "X" {
+		team = "O"
+	} else team == "O" {
+		team = "X"
+	}
+}
+
 func checkWin() {}
 
-func askInput() {}
+func askInput() {
+
+}
+
+func error() {}
