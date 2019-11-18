@@ -7,20 +7,14 @@ import (
 	"strings"
 )
 
-func main() {
-	var board [9]string
-	var a, b, c, d, e, f, g, h, i = " ", " ", " ", " ", " ", " ", " ", " ", " "
-	var s = " | "
-	var line = "-----------"
-	var line1 = a + s + b + s + c
-	var line2 = d + s + e + s + f
-	var line3 = g + s + h + s + i
+var board = [3][3]string{
+	{" ", " ", " "},
+	{" ", " ", " "},
+	{" ", " ", " "}}
 
-	fmt.Println(line1)
-	fmt.Println(line)
-	fmt.Println(line2)
-	fmt.Println(line)
-	fmt.Println(line3)
+func main() {
+
+	printboard()
 
 	//Choose wether to be X's or O's
 	var team string
@@ -90,11 +84,32 @@ func goFirst() string {
 	return playerFirst
 }
 
-func createBoard() {}
+func clearBoard() {
+	for i := 0; i < 2; i++ {
+		for j := 0; j < 2; j++ {
+			board[i][j] = " "
+		}
+	}
 
-func updateBoard() {}
+}
 
-func placeTile() {}
+func updateBoard(xlocation int, ylocation int, tile string) {
+	board[xlocation][ylocation] = tile
+}
+
+func printboard() {
+	fmt.Println(board[0][0] + "|" + board[0][1] + "|" + board[0][2])
+	fmt.Println("-----------")
+	fmt.Println(board[1][0] + "|" + board[1][1] + "|" + board[1][2])
+	fmt.Println("-----------")
+	fmt.Println(board[2][0] + "|" + board[2][1] + "|" + board[2][2])
+}
+
+func placeTile(location int, tile string) {
+	var xlocation = (location / 3) - 1
+	var ylocation = (location % 3) - 1
+	updateBoard(xlocation, ylocation, tile)
+}
 
 func checkWin() {}
 
