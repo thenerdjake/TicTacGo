@@ -11,13 +11,13 @@ var board = [3][3]string{
 	{" ", " ", " "},
 	{" ", " ", " "},
 	{" ", " ", " "}}
-
 var currentPlayer = " "
+var winner = " "
+var xHuman = 0
+var yHuman = 0
 
 func main() {
-
 	printboard()
-
 	//Choose wether to be X's or O's
 	var team string
 	for {
@@ -27,28 +27,10 @@ func main() {
 		}
 		fmt.Println("Please choose either X's or O's")
 	}
-
 	//Choose wether to go first or second
 	//goFirst asks if you want to go first so yes is first no is second
 	//check validity of answer then set the true value of going first
-	var first bool
-	var firstS string
-	for {
-		firstS = goFirst()
-		if firstS == "yes" || firstS == "Yes" || firstS == "y" || firstS == "Y" || firstS == "no" || firstS == "No" || firstS == "n" || firstS == "N" {
-			if firstS == "yes" || firstS == "Yes" || firstS == "y" || firstS == "Y" {
-				first = true
-				break
-			} else {
-				first = false
-				break
-			}
-			if first == true {
-				break
-			}
-		}
-	}
-
+	var first = getYesNo()
 	if first == true {
 		setPlayer(team)
 	} else {
@@ -63,66 +45,6 @@ func main() {
 		clearBoard()
 		printboard()
 	}
-
-}
-
-//function to ask user to choose a team
-//return string team
-func chooseTeam() string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Do you wanna be X's or O's?")
-	var team string
-	team, _ = reader.ReadString('\n')
-	team = strings.TrimRight(team, "\r\n")
-	return team
-}
-
-func capitalize(letter string) string {
-	if letter == "x" || letter == "X" {
-		return "X"
-	} else {
-		return "O"
-	}
-}
-
-func opposite(letter string) string {
-	if letter == "X" {
-		return "O"
-	} else {
-		return "X"
-	}
-}
-
-//ask the player how many people are playing
-//ToDo: give option of 0,1,2
-//return string playnumber
-func choosePlayers() string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("How many Players?")
-	var playerNumber string
-	playerNumber, _ = reader.ReadString('\n')
-	playerNumber = strings.TrimRight(playerNumber, "\r\n")
-	return playerNumber
-}
-
-//ask the player to answer yes or no if they want to go first
-//return string playerFirst
-func goFirst() string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Do you wanna go first? yes or no?")
-	var playerFirst string
-	playerFirst, _ = reader.ReadString('\n')
-	playerFirst = strings.TrimRight(playerFirst, "\r\n")
-	return playerFirst
-}
-
-func clearBoard() {
-	for i := 0; i <= 2; i++ {
-		for j := 0; j <= 2; j++ {
-			board[i][j] = " "
-		}
-	}
-
 }
 
 func playGame() {
@@ -137,8 +59,73 @@ func playGame() {
 	displayWinner()
 }
 
-func updateBoard(xlocation int, ylocation int, tile string) {
-	board[xlocation][ylocation] = tile
+func choosePlayers() string {
+	//ask the player how many people are playing
+	//return string playnumber
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("How many Players?")
+	var playerNumber string
+	playerNumber, _ = reader.ReadString('\n')
+	playerNumber = strings.TrimRight(playerNumber, "\r\n")
+	return playerNumber
+}
+
+func chooseTeam() string {
+	//function to ask user to choose a team
+	//return string team
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Do you wanna be X's or O's?")
+	var team string
+	team, _ = reader.ReadString('\n')
+	team = strings.TrimRight(team, "\r\n")
+	return team
+}
+
+func goFirst() string {
+	//ask the player to answer yes or no if they want to go first
+	//return string playerFirst
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Do you wanna go first? yes or no?")
+	var playerFirst string
+	playerFirst, _ = reader.ReadString('\n')
+	playerFirst = strings.TrimRight(playerFirst, "\r\n")
+	return playerFirst
+}
+
+func askInput() {
+	for {
+		fmt.Println("Current Player: " + currentPlayer)
+		fmt.Println("Where do you want to go? 1-9")
+		var choice int
+		fmt.Scan(&choice)
+		if choice < 0 && choice > 10 {
+			fmt.Println("I said 1-9, try again")
+		} else if checkTile(choice) != " " {
+			fmt.Println("That spot is taken try again")
+		} else {
+			placeTile(choice, currentPlayer)
+			break
+		}
+	}
+
+}
+
+func getYesNo() bool {
+	reader := bufio.NewReader(os.Stdin)
+	var response string
+	for {
+		response, _ = reader.ReadString('\n')
+		response = strings.TrimRight(response, "\r\n")
+		if response == "yes" || response == "Yes" || response == "y" || response == "Y" || response == "no" || response == "No" || response == "n" || response == "N" {
+			if response == "yes" || response == "Yes" || response == "y" || response == "Y" {
+				return true
+			} else {
+				return false
+			}
+		} else {
+			fmt.Println("Please answer yes or no")
+		}
+	}
 }
 
 func printboard() {
@@ -149,6 +136,19 @@ func printboard() {
 	fmt.Println(board[2][0] + "|" + board[2][1] + "|" + board[2][2])
 }
 
+func clearBoard() {
+	//replaces each tile in the board with an empty string
+	for i := 0; i <= 2; i++ {
+		for j := 0; j <= 2; j++ {
+			board[i][j] = " "
+		}
+	}
+}
+
+func updateBoard(xlocation int, ylocation int, tile string) {
+	board[xlocation][ylocation] = tile
+}
+
 func placeTile(location int, tile string) {
 	xlocation := (location - 1) / 3
 	ylocation := (location - 1) % 3
@@ -157,14 +157,6 @@ func placeTile(location int, tile string) {
 
 func setPlayer(team string) {
 	currentPlayer = capitalize(team)
-}
-
-func changePlayer() {
-	if currentPlayer == "X" {
-		currentPlayer = "O"
-	} else if currentPlayer == "O" {
-		currentPlayer = "X"
-	}
 }
 
 func getWinner() string {
@@ -196,6 +188,30 @@ func getWinner() string {
 	return " "
 }
 
+func checkWin() bool {
+	if getWinner() != " " {
+		return true
+	} else {
+		return false
+	}
+}
+
+func displayWinner() {
+	fmt.Println()
+	fmt.Println("Congrats!" + getWinner() + " won the game")
+	fmt.Println()
+}
+
+func tileNumber(location int) int {
+	if board[convertX(location)][convertY(location)] == "O" {
+		return 1
+	} else if board[convertX(location)][convertY(location)] == "X" {
+		return -1
+	} else {
+		return 0
+	}
+}
+
 func rowSum(row int) int {
 	return tileNumber(row*3) + tileNumber(row*3-1) + tileNumber(row*3-2)
 }
@@ -212,45 +228,20 @@ func diagonalSum(diagonal int) int {
 	}
 }
 
-func tileNumber(location int) int {
-	if board[convertX(location)][convertY(location)] == "O" {
-		return 1
-	} else if board[convertX(location)][convertY(location)] == "X" {
-		return -1
+func capitalize(letter string) string {
+	if letter == "x" || letter == "X" {
+		return "X"
 	} else {
-		return 0
+		return "O"
 	}
 }
 
-func checkWin() bool {
-	if getWinner() != " " {
-		return true
+func opposite(letter string) string {
+	if letter == "X" {
+		return "O"
 	} else {
-		return false
+		return "X"
 	}
-}
-
-func playAgain() bool {
-	fmt.Println("Do you want to play again?")
-	return getYesNo()
-}
-
-func askInput() {
-	for {
-		fmt.Println("Current Player: " + currentPlayer)
-		fmt.Println("Where do you want to go? 1-9")
-		var choice int
-		fmt.Scan(&choice)
-		if choice < 0 && choice > 10 {
-			fmt.Println("I said 1-9, try again")
-		} else if checkTile(choice) != " " {
-			fmt.Println("That spot is taken try again")
-		} else {
-			placeTile(choice, currentPlayer)
-			break
-		}
-	}
-
 }
 
 func convertX(location int) int {
@@ -265,30 +256,11 @@ func checkTile(location int) string {
 	return board[convertX(location)][convertY(location)]
 }
 
-func getYesNo() bool {
-	reader := bufio.NewReader(os.Stdin)
-	var response string
-	for {
-		response, _ = reader.ReadString('\n')
-		response = strings.TrimRight(response, "\r\n")
-		if response == "yes" || response == "Yes" || response == "y" || response == "Y" || response == "no" || response == "No" || response == "n" || response == "N" {
-			if response == "yes" || response == "Yes" || response == "y" || response == "Y" {
-				return true
-			} else {
-				return false
-			}
-		} else {
-			fmt.Println("Please answer yes or no")
-		}
-	}
+func changePlayer() {
+	currentPlayer = opposite(currentPlayer)
 }
 
-func error() {}
-
-func checkPlayAgain() {}
-
-func displayWinner() {
-	fmt.Println()
-	fmt.Println("Congrats!" + getWinner() + " won the game")
-	fmt.Println()
+func playAgain() bool {
+	fmt.Println("Do you want to play again?")
+	return getYesNo()
 }
