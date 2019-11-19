@@ -13,29 +13,30 @@ var board = [3][3]string{
 	{" ", " ", " "}}
 var currentPlayer = " "
 var winner = " "
+var players = 0
 var xHuman = 0
-var yHuman = 0
+var oHuman = 0
+var xWins = 0
+var oWins = 0
+var gamesLeft = 0
 
 func main() {
 	printboard()
-	//Choose wether to be X's or O's
-	var team string
-	for {
-		team = chooseTeam()
-		if team == "x" || team == "X" || team == "O" || team == "o" {
-			break
-		}
-		fmt.Println("Please choose either X's or O's")
+
+	//How many people want to play
+	getPlayers()
+	//if 0
+	//How many games want to be played
+	if players == 0{
+		getGames()
 	}
-	//Choose wether to go first or second
-	//goFirst asks if you want to go first so yes is first no is second
-	//check validity of answer then set the true value of going first
-	var first = getYesNo()
-	if first == true {
-		setPlayer(team)
-	} else {
-		setPlayer(opposite(team))
+	//if 1
+	//Do you want to be X or O
+	if players == 1{
+		getTeam()
 	}
+	//Who goes first, X or O
+	getFirst()
 
 	for {
 		playGame()
@@ -59,37 +60,73 @@ func playGame() {
 	displayWinner()
 }
 
-func choosePlayers() string {
-	//ask the player how many people are playing
-	//return string playnumber
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("How many Players?")
-	var playerNumber string
-	playerNumber, _ = reader.ReadString('\n')
-	playerNumber = strings.TrimRight(playerNumber, "\r\n")
-	return playerNumber
+func getPlayers() {
+	for {
+		fmt.Println("How many human players are playing? 1-2")
+		var choice int
+		fmt.Scan(&choice)
+		if choice >= 0 && choice <=2  {
+			players = choice
+			break
+		} else {
+			fmt.Println("I said 1-2, 0 is also an option")
+		}
+	}
 }
 
-func chooseTeam() string {
-	//function to ask user to choose a team
-	//return string team
+func getGames(){
+	for {
+		fmt.Println("How many games should the bots play?")
+		var choice int
+		fmt.Scan(&choice)
+		if choice > 0 {
+			gamesLeft = choice
+			break
+		} else {
+			fmt.Println("I have to at least play one game")
+		}
+	}
+}
+
+func getTeam(){
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Do you wanna be X's or O's?")
 	var team string
 	team, _ = reader.ReadString('\n')
-	team = strings.TrimRight(team, "\r\n")
-	return team
+	for {
+		team, _ = reader.ReadString('\n')
+		team = strings.TrimRight(team, "\r\n")
+		if team == "x" || team == "X" || team == "O" || team == "o" {
+			if team == "x" || team == "X"{
+				xHuman = 1
+				break
+			}else{
+				oHuman = 1
+				break
+			}
+		}
+		fmt.Println("Please choose either X's or O's")
+	}
 }
 
-func goFirst() string {
-	//ask the player to answer yes or no if they want to go first
-	//return string playerFirst
+func getFirst() {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Do you wanna go first? yes or no?")
-	var playerFirst string
-	playerFirst, _ = reader.ReadString('\n')
-	playerFirst = strings.TrimRight(playerFirst, "\r\n")
-	return playerFirst
+	fmt.Println("Should X or O go first?")
+	var first string
+	for {
+			first, _ = reader.ReadString('\n')
+			first = strings.TrimRight(first, "\r\n")
+			if first == "x" || first == "X" || first == "O" || first == "o" {
+				if first == "x" || first == "X"{
+					currentPlayer = "X"
+					break
+					}else{
+					currentPlayer = "O"
+					break
+				}
+			}
+			fmt.Println("Please choose either X's or O's")
+	}
 }
 
 func askInput() {
@@ -107,7 +144,6 @@ func askInput() {
 			break
 		}
 	}
-
 }
 
 func getYesNo() bool {
@@ -129,11 +165,18 @@ func getYesNo() bool {
 }
 
 func printboard() {
-	fmt.Println(board[0][0] + "|" + board[0][1] + "|" + board[0][2])
+	fmt.Print("X has won:")
+	fmt.Print(xWins)
+	fmt.Print("   O has won")
+	fmt.Print(oWins)
+	fmt.Print("   Games Left:")
+	fmt.Print(gamesLeft)
+	fmt.Println()
+	fmt.Println(" " + board[0][0] + " | " + board[0][1] + " | " + board[0][2])
 	fmt.Println("-----------")
-	fmt.Println(board[1][0] + "|" + board[1][1] + "|" + board[1][2])
+	fmt.Println(" " + board[1][0] + " | " + board[1][1] + " | " + board[1][2])
 	fmt.Println("-----------")
-	fmt.Println(board[2][0] + "|" + board[2][1] + "|" + board[2][2])
+	fmt.Println(" " + board[2][0] + " | " + board[2][1] + " | " + board[2][2])
 }
 
 func clearBoard() {
@@ -189,7 +232,11 @@ func getWinner() string {
 }
 
 func checkWin() bool {
-	if getWinner() != " " {
+	if getWinner() == "X" {
+		xWins++
+		return true
+	} else if getWinner() == "O" {
+		oWins++
 		return true
 	} else {
 		return false
